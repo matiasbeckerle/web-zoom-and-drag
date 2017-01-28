@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="Simple zoom and drag experiment with HTML, CSS and JavaScript">
+  <meta name="keywords" content="HTML,CSS,JavaScript,Zoom,Scale,Drag">
+  <meta name="author" content="Matias Beckerle">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zoom & Drag</title>
+  <style type="text/css">
+    body { background-color: #CCCCCC; }
+    #parentContainer { width: 640px; height: 480px; background-color: #FFFFFF; overflow: hidden; }
+    #parentContainer, #parentContainer * { cursor: move; }
+    #childrenContainer { width: 100%; height: 100%; position: relative; }
+    .square { width: 320px; height: 240px; background-color: #000000; color: #CCCCCC; }
+  </style>
+</head>
+<body>
+  <div id="parentContainer">
+    <div id="childrenContainer">
+      <!-- children -->
+      <div class="square"></div>
+      <h1>A header</h1>
+      <p>A paragraph.</p>
+      <!-- more children -->
+    </div>
+  </div>
+  <button id="zoomIn">Zoom in</button>
+  <button id="zoomOut">Zoom out</button>
+  <script>
+    // Scale settings.
+    var maxScale = 2;
+    var minScale = 0.1;
+    var scaleAmount = 0.1;
+    var currentScale = 1;
+
+    // Drag settings.
+    var draggableElementLeftOffset = 0;
+    var draggableElementTopOffset = 0;
+
+    // Target containers.
+    var parentContainer = document.getElementById('parentContainer');
+    var childrenContainer = document.getElementById('childrenContainer');
+
+    // Bind mouse events.
+    parentContainer.addEventListener('mousedown', mouseDown, false);
+    document.addEventListener('mouseup', mouseUp, false);
+
+    // Bind zoom controls.
+    document.getElementById('zoomIn').addEventListener('click', zoomIn);
+    document.getElementById('zoomOut').addEventListener('click', zoomOut);
+
+    function zoomIn() {
+      currentScale = Math.min(currentScale + scaleAmount, maxScale); // Clamp to max value.
+      scale();
+    }
+
+    function zoomOut() {
+      currentScale = Math.max(currentScale - scaleAmount, minScale); // Clamp to min value.
+      scale();
+    }
+
+    function scale() {
+      childrenContainer.style.transform = 'scale(' + currentScale + ')';
+    }
+
+    function mouseUp() {
+      document.removeEventListener('mousemove', drag, false);
+    }
+
+    function mouseDown() {
+      draggableElementLeftOffset = childrenContainer.offsetLeft;
+      draggableElementTopOffset = childrenContainer.offsetTop;
+      document.addEventListener('mousemove', drag, false);
+    }
+
+    function drag(e) {
+      childrenContainer.style.left = (e.pageX - draggableElementLeftOffset) + 'px';
+      childrenContainer.style.top = (e.pageY - draggableElementTopOffset) + 'px';
+    }
+  </script>
+</body>
+</html>
